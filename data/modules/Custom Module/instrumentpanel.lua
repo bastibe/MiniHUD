@@ -32,6 +32,23 @@ local throttleProp = globalPropertyf("sim/cockpit2/engine/actuators/throttle_rat
 local windDirectionProp = globalPropertyf("sim/cockpit2/gauges/indicators/wind_heading_deg_mag")
 local windSpeedProp = globalPropertyf("sim/cockpit2/gauges/indicators/wind_speed_kts")
 
+local throttleRect = {0, 0, 0, 0}
+local propRect = {0, 0, 0, 0}
+local mixtureRect = {0, 0, 0, 0}
+local flapsRect = {0, 0, 0, 0}
+
+
+function clamp(x)
+    if x > 1 then
+        return 1
+    elseif x < 0 then
+        return 0
+    else
+        return x
+    end
+end
+
+
 --- Drawing callback.
 function draw()
     sasl.gl.drawRectangle(0, 0, 60, 200, background)
@@ -86,12 +103,15 @@ function draw()
     -- throttle quadrant
     ------------------------------------------------------------------------
     local throttleX = 155
+    throttleRect = {throttleX-15-5, 25, 10, 60}
     sasl.gl.drawRectangle(throttleX-15, 25, 1, 60, white)
     sasl.gl.drawText(sourceCodePro, throttleX-15, 12, "T", 12, false, false, TEXT_ALIGN_CENTER, white)
     sasl.gl.drawCircle(throttleX-15, 25 + get(throttleProp) * 60, 5, true, lightGrey)
+    propRect = {throttleX-5, 25, 10, 60}
     sasl.gl.drawRectangle(throttleX, 25, 1, 60, white)
     sasl.gl.drawText(sourceCodePro, throttleX, 12, "P", 12, false, false, TEXT_ALIGN_CENTER, white)
     sasl.gl.drawCircle(throttleX, 25 + get(propProp) * 60, 5, true, lightBlue)
+    mixtureRect = {throttleX+15-5, 25, 10, 60}
     sasl.gl.drawRectangle(throttleX+15, 25, 1, 60, white)
     sasl.gl.drawText(sourceCodePro, throttleX+15, 12, "M", 12, false, false, TEXT_ALIGN_CENTER, white)
     sasl.gl.drawCircle(throttleX+15, 25 + get(mixtureProp) * 60, 5, true, lightRed)
@@ -100,9 +120,10 @@ function draw()
     -- flaps
     ------------------------------------------------------------------------
     local flapX = 195
+    flapsRect = {flapX-5, 25, 10, 40}
     sasl.gl.drawRectangle(flapX, 25, 1, 40, white)
     sasl.gl.drawText(sourceCodePro, flapX, 12, "F", 12, false, false, TEXT_ALIGN_CENTER, white)
-    sasl.gl.drawRectangle(flapX-5, 25 + (1-get(flapProp)) * 40 - 2, 10, 5, white)
+    sasl.gl.drawRectangle(flapX-5, 25 + (1-get(flapsProp)) * 40 - 2, 10, 5, white)
 
     ------------------------------------------------------------------------
     -- vvi/altitude
@@ -176,4 +197,38 @@ function draw()
         currentY = currentY - 3
     end
     sasl.gl.restoreGraphicsContext()
+end
+
+
+function onMouseDown(comp, x, y, button, parentX, parentY)
+    if button ~= MB_LEFT then
+        return false
+    end
+    if isInRect(throttleRect, x, y) then
+        set(throttleProp, clamp((y-throttleRect[2])/throttleRect[4]))
+    elseif isInRect(propRect, x, y) then
+        set(propProp, clamp((y-propRect[2])/propRect[4]))
+    elseif isInRect(mixtureRect, x, y) then
+        set(mixtureProp, clamp((y-mixtureRect[2])/mixtureRect[4]))
+    elseif isInRect(flapsRect, x, y) then
+        set(flapsProp, clamp((y-flapsRect[2])/flapsRect[4]))
+    end
+    return true
+end
+
+
+function onMouseHold(comp, x, y, button, parentX, parentY)
+    if button ~= MB_LEFT then
+        return false
+    end
+    if isInRect(throttleRect, x, y) then
+        set(throttleProp, clamp((y-throttleRect[2])/throttleRect[4]))
+    elseif isInRect(propRect, x, y) then
+        set(propProp, clamp((y-propRect[2])/propRect[4]))
+    elseif isInRect(mixtureRect, x, y) then
+        set(mixtureProp, clamp((y-mixtureRect[2])/mixtureRect[4]))
+    elseif isInRect(flapsRect, x, y) then
+        set(flapsProp, 1-clamp((y-flapsRect[2])/flapsRect[4]))
+    end
+    return true
 end
