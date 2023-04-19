@@ -6,6 +6,7 @@ local red = {0.9, 0.2, 0.2, 1.0}
 local lightRed = {0.9, 0.4, 0.4, 1.0}
 local lightBlue = {0.4, 0.4, 0.9, 1.0}
 local lightGrey = {0.8, 0.8, 0.8, 1.0}
+local greyBlue = {0.6, 0.6, 0.9, 1.0}
 local background = {0.0, 0.0, 0.0, 0.4}
 
 local airspeedProp = globalPropertyf("sim/cockpit2/gauges/indicators/airspeed_kts_pilot")
@@ -28,6 +29,8 @@ local flapProp = globalPropertyf("sim/cockpit2/controls/flap_handle_request_rati
 local mixtureProp = globalPropertyf("sim/cockpit2/engine/actuators/mixture_ratio_all")
 local propProp = globalPropertyf("sim/cockpit2/engine/actuators/prop_ratio_all")
 local throttleProp = globalPropertyf("sim/cockpit2/engine/actuators/throttle_ratio_all")
+local windDirectionProp = globalPropertyf("sim/cockpit2/gauges/indicators/wind_heading_deg_mag")
+local windSpeedProp = globalPropertyf("sim/cockpit2/gauges/indicators/wind_speed_kts")
 
 --- Drawing callback.
 function draw()
@@ -144,5 +147,33 @@ function draw()
     sasl.gl.drawRectangle(16, 0, 8, 1, white)
     sasl.gl.drawRectangle(-24, 0, 8, 1, white)
     sasl.gl.drawRectangle(0, -24, 1, 8, white)
+
+    -- draw wind indicator
+    sasl.gl.setRotateTransform(get(windDirectionProp))
+    local windSpeed = get(windSpeedProp)
+    local numTriangles = math.floor(windSpeed/50)
+    windSpeed = windSpeed - numTriangles * 50
+    local numLong = math.floor(windSpeed/10)
+    windSpeed = windSpeed - numLong * 10
+    local numShort = math.floor(windSpeed/5)
+    local barblength = 26
+    if windSpeed < 50 then
+        barblength = 20
+    end
+    sasl.gl.drawRectangle(0, -barblength/2, 1, barblength, greyBlue)
+    local currentY = barblength/2
+    for triangle=1,numTriangles do
+        sasl.gl.drawTriangle(0, currentY, 0, currentY-5, -6, currentY+2, greyBlue)
+        currentY = currentY - 6
+    end
+    currentY = currentY - 2
+    for long=1,numLong do
+        sasl.gl.drawLine(0, currentY, -6, currentY+5, greyBlue)
+        currentY = currentY - 3
+    end
+    for short=1,numShort do
+        sasl.gl.drawLine(0, currentY, -3, currentY+3, greyBlue)
+        currentY = currentY - 3
+    end
     sasl.gl.restoreGraphicsContext()
 end
