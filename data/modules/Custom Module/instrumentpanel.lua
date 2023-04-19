@@ -3,6 +3,7 @@ local white = {1.0, 1.0, 1.0, 1.0}
 local green = {0.2, 0.9, 0.2, 1.0}
 local yellow = {0.9, 0.9, 0.2, 1.0}
 local red = {0.9, 0.2, 0.2, 1.0}
+local orange = {0.9, 0.5, 0.2, 1.0}
 local lightRed = {0.9, 0.4, 0.4, 1.0}
 local lightBlue = {0.4, 0.4, 0.9, 1.0}
 local lightGrey = {0.8, 0.8, 0.8, 1.0}
@@ -16,8 +17,7 @@ local vnoProp = globalPropertyf("sim/aircraft/view/acf_Vno")
 local vsoProp = globalPropertyf("sim/aircraft/view/acf_Vso")
 local vsProp = globalPropertyf("sim/aircraft/view/acf_Vs")
 local altitudeProp = globalPropertyf("sim/cockpit2/gauges/indicators/altitude_ft_pilot")
-local aoaProp = globalPropertyf("sim/cockpit2/gauges/indicators/AoA_pilot")
-local compassProp = globalPropertyf("sim/cockpit2/gauges/indicators/compass_heading_deg_mag")
+local compassProp = globalPropertyf("sim/cockpit2/gauges/indicators/ground_track_mag_pilot")
 local vviProp = globalPropertyf("sim/cockpit2/gauges/indicators/vvi_fpm_pilot")
 local aileronTrimProp = globalPropertyf("sim/cockpit2/controls/aileron_trim")
 local elevatorTrimProp = globalPropertyf("sim/cockpit2/controls/elevator_trim")
@@ -25,7 +25,7 @@ local rudderTrimProp = globalPropertyf("sim/cockpit2/controls/rudder_trim")
 local rudderControlProp = globalPropertyf("sim/cockpit2/controls/yoke_heading_ratio")
 local elevatorControlProp = globalPropertyf("sim/cockpit2/controls/yoke_pitch_ratio")
 local aileronControlProp = globalPropertyf("sim/cockpit2/controls/yoke_roll_ratio")
-local flapProp = globalPropertyf("sim/cockpit2/controls/flap_handle_request_ratio")
+local flapsProp = globalPropertyf("sim/cockpit2/controls/flap_handle_request_ratio")
 local mixtureProp = globalPropertyf("sim/cockpit2/engine/actuators/mixture_ratio_all")
 local propProp = globalPropertyf("sim/cockpit2/engine/actuators/prop_ratio_all")
 local throttleProp = globalPropertyf("sim/cockpit2/engine/actuators/throttle_ratio_all")
@@ -51,6 +51,7 @@ end
 
 --- Drawing callback.
 function draw()
+    -- draw dark background
     sasl.gl.drawRectangle(0, 0, 60, 200, background)
     sasl.gl.drawRectangle(60, 0, 340, 110, background)
 
@@ -66,6 +67,14 @@ function draw()
     local maxGreenRatio = (get(vnoProp) - minAirspeed) / (maxAirspeed - minAirspeed)
     local maxYellowRatio = (get(vneProp) - minAirspeed) / (maxAirspeed - minAirspeed)
     local airspeedRatio = (get(airspeedProp) - minAirspeed) / (maxAirspeed - minAirspeed)
+    local airspeedColor = white
+    if airspeedRatio > 1 then
+        airspeedRatio = 1
+        airspeedColor = orange
+    elseif airspeedRatio < 0 then
+        airspeedRatio = 0
+        airspeedColor = orange
+    end
     sasl.gl.drawRectangle(26, 25+minGreenRatio * airspeedHeight,
                           9, (maxGreenRatio-minGreenRatio) * airspeedHeight,
                           green)
@@ -76,9 +85,10 @@ function draw()
     sasl.gl.drawRectangle(airspeedX-4, 25 + maxYellowRatio * airspeedHeight - 1, 9, 3, red)
     sasl.gl.drawRectangle(airspeedX, 25, 1, airspeedHeight, white)
     local iasY = 25 + airspeedRatio * airspeedHeight
-    sasl.gl.drawTriangle(airspeedX+3, iasY, airspeedX+10, iasY+5, airspeedX+10, iasY-5, white)
-    sasl.gl.drawTriangle(airspeedX-3, iasY, airspeedX-10, iasY+5, airspeedX-10, iasY-5, white)
-    sasl.gl.drawText(sourceCodePro, airspeedX, 12, string.format("%.0f KTS", get(airspeedProp)), 12, false, false, TEXT_ALIGN_CENTER, white)
+    sasl.gl.drawTriangle(airspeedX+3, iasY, airspeedX+10, iasY+5, airspeedX+10, iasY-5, airspeedColor)
+    sasl.gl.drawTriangle(airspeedX-3, iasY, airspeedX-10, iasY+5, airspeedX-10, iasY-5, airspeedColor)
+    sasl.gl.drawText(sourceCodePro, airspeedX, 12, string.format("%.0f KTS", get(airspeedProp)), 12,
+                     false, false, TEXT_ALIGN_CENTER, airspeedColor)
 
     ------------------------------------------------------------------------
     -- trim indicator
@@ -145,11 +155,19 @@ function draw()
     sasl.gl.drawText(sourceCodePro, altimeterX, 60-5, string.format("%.0f", altitude), 12, false, false, TEXT_ALIGN_CENTER, white)
     local vviX = altimeterX+29
     local vviY = 60 + get(vviProp)*0.007
+    local vviColor = white
+    if vviY < 60-30 then
+        vviY = 60-30
+        vviColor = orange
+    elseif vviY > 60+30 then
+        vviY = 60+30
+        vviColor = orange
+    end
     sasl.gl.drawRectangle(vviX, 60-30, 1,  60, white) -- axis
     sasl.gl.drawPolyLine({vviX, vviY,
                           vviX+8, vviY+6, vviX+55, vviY+6, vviX+55, vviY-6, vviX+8, vviY-6,
-                          vviX, vviY}, white)
-    sasl.gl.drawText(sourceCodePro, vviX+10, vviY-4, string.format("%+.0f", get(vviProp)), 12, false, false, TEXT_ALIGN_LEFT, white)
+                          vviX, vviY}, vviColor)
+    sasl.gl.drawText(sourceCodePro, vviX+10, vviY-4, string.format("%+.0f", get(vviProp)), 12, false, false, TEXT_ALIGN_LEFT, vviColor)
 
     ------------------------------------------------------------------------
     -- compass
