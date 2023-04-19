@@ -220,7 +220,7 @@ end
 
 function onMouseDown(comp, x, y, button, parentX, parentY)
     if button ~= MB_LEFT then
-        return false
+        return false  -- allow other callbacks to run (e.g. moving the HUD window)
     end
     if isInRect(throttleRect, x, y) then
         set(throttleProp, clamp((y-throttleRect[2])/throttleRect[4]))
@@ -230,6 +230,8 @@ function onMouseDown(comp, x, y, button, parentX, parentY)
         set(mixtureProp, clamp((y-mixtureRect[2])/mixtureRect[4]))
     elseif isInRect(flapsRect, x, y) then
         set(flapsProp, clamp((y-flapsRect[2])/flapsRect[4]))
+    else
+        return false
     end
     return true
 end
@@ -237,7 +239,7 @@ end
 
 function onMouseHold(comp, x, y, button, parentX, parentY)
     if button ~= MB_LEFT then
-        return false
+        return false  -- allow other callbacks to run (e.g. moving the HUD window)
     end
     if isInRect(throttleRect, x, y) then
         set(throttleProp, clamp((y-throttleRect[2])/throttleRect[4]))
@@ -247,6 +249,8 @@ function onMouseHold(comp, x, y, button, parentX, parentY)
         set(mixtureProp, clamp((y-mixtureRect[2])/mixtureRect[4]))
     elseif isInRect(flapsRect, x, y) then
         set(flapsProp, 1-clamp((y-flapsRect[2])/flapsRect[4]))
+    else
+        return false
     end
     return true
 end
