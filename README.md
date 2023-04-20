@@ -10,6 +10,22 @@ the MiniHUD to make X-Plane usable in these situations.
 ![External Screenshot](external%20screenshot.png)
 ![Internal Screenshot](internal%20screenshot.png)
 
+From left to right, the plugin shows:
+
+1. An airspeed indicator with the usual V-speed zones
+2. a trim/control indicator of aileron/elevator/rudder trims as white
+   bars, and current control input as thicker white lines (useful if
+   you move your rudder with buttons instead of pedals)
+3. engine indicators for Throttle, Prop, and Mixture (drag to change)
+4. a flaps indicator (drag to change)
+5. an altitude indicator and vertical speed gauge
+6. a compass, with a wind speed/direction barb
+
+The UI is meant to be minimal, so as to get out of your way while
+flying. The functionality is somewhat similar to "Scenic Flyer", but
+works on Mac and Linux. In design, it is somewhat similar to Microsoft
+Flight Simulator 2020's instrument overlay.
+
 ### Configuration
 
 You can drag and drop the MiniHUD to a different place on the screen.
@@ -19,7 +35,22 @@ off.
 
 ### Installation
 
-Unzip the MiniHUD directory to X-Plane/Resources/Plugins
+Unzip the MiniHUD directory to X-Plane/Resources/Plugins. Your X-Plane
+directory should now contain
+
+<pre>
+📂 X-Plane 12
+└ 📂 Resources
+  └ 📂 plugins
+    └ 📂 MiniHUD
+      ├ 📁 64
+      ├ 📁 data
+      ├ 📁 liblinux
+      └ 📄 README.md</pre>
+
+### Compatibility
+
+MiniHUD works in X-Plane 11 and 12, on Windows, macOS (Intel+ARM), and Linux.
 
 ### License
 
