@@ -19,6 +19,7 @@ local vsProp = globalPropertyf("sim/aircraft/view/acf_Vs")
 local altitudeProp = globalPropertyf("sim/cockpit2/gauges/indicators/altitude_ft_pilot")
 local compassProp = globalPropertyf("sim/cockpit2/gauges/indicators/ground_track_mag_pilot")
 local vviProp = globalPropertyf("sim/cockpit2/gauges/indicators/vvi_fpm_pilot")
+local altitudeAGLProp = globalPropertyf("sim/flightmodel/position/y_agl")
 local aileronTrimProp = globalPropertyf("sim/cockpit2/controls/aileron_trim")
 local elevatorTrimProp = globalPropertyf("sim/cockpit2/controls/elevator_trim")
 local rudderTrimProp = globalPropertyf("sim/cockpit2/controls/rudder_trim")
@@ -73,7 +74,9 @@ function draw()
         airspeedColor = orange
     elseif airspeedRatio < 0 then
         airspeedRatio = 0
-        airspeedColor = orange
+        if get(altitudeAGLProp) > 10 then
+            airspeedColor = orange
+        end
     end
     sasl.gl.drawRectangle(26, 25+minGreenRatio * airspeedHeight,
                           9, (maxGreenRatio-minGreenRatio) * airspeedHeight,
