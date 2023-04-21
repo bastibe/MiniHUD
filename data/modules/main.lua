@@ -3,13 +3,13 @@ sasl.options.setAircraftPanelRendering(false)
 sasl.options.set3DRendering(false)
 sasl.options.setInteractivity(false)
 
-local miniHUDVersionProp = createGlobalPropertys("miniHUD/version", "v1.1.3")
+local miniHUDVersionProp = createGlobalPropertys("miniHUD/version", "v1.2.0")
 sasl.logInfo("Version:", get(miniHUDVersionProp))
 
 local instrumentPanel = loadComponent("instrumentpanel")
 local instrumentWindow = contextWindow {
     name = "Instrument HUD";
-    position = { 50, 50, 400, 200 };
+    position = { 50, 50, 450, 200 };
     saveState = false;
     noDecore = true;
     noBackground = true;
@@ -21,7 +21,7 @@ local instrumentWindow = contextWindow {
     layer = SASL_CW_LAYER_FLIGHT_OVERLAY;
     components = {
         instrumentPanel {
-            position = { 0, 0, 400, 200 };
+            position = { 0, 0, 450, 200 };
         }
     }
 }

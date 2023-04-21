@@ -148,31 +148,32 @@ function draw()
     -- vvi/altitude
     ------------------------------------------------------------------------
     local altimeterX = 255
+    local altimeterY = 60
     local altitude = get(altitudeProp)
     local minStripAlt = math.floor(altitude/100)*100
     for altIdx=-3, 3 do
         local stripAlt = minStripAlt + altIdx*100
         local altDifference = altitude - stripAlt
         if stripAlt >= 0 then
-            sasl.gl.drawText(sourceCodePro, altimeterX, 60-5-altDifference/7,
+            sasl.gl.drawText(sourceCodePro, altimeterX, altimeterY-5-altDifference/7,
                              string.format("%.0f", stripAlt), 12, false, false, TEXT_ALIGN_CENTER,
                              {1, 1, 1, 1-math.abs(altDifference)/400})
         end
     end
-    sasl.gl.drawRectangle(altimeterX-30, 60-8, 60, 16, background)
-    sasl.gl.drawFrame(altimeterX-30, 60-8, 60, 16, white)
-    sasl.gl.drawText(sourceCodePro, altimeterX, 60-5, string.format("%.0f", altitude), 12, false, false, TEXT_ALIGN_CENTER, white)
+    sasl.gl.drawRectangle(altimeterX-30, altimeterY-8, 60, 16, background)
+    sasl.gl.drawFrame(altimeterX-30, altimeterY-8, 60, 16, white)
+    sasl.gl.drawText(sourceCodePro, altimeterX, altimeterY-5, string.format("%.0f", altitude), 12, false, false, TEXT_ALIGN_CENTER, white)
     local vviX = altimeterX+29
-    local vviY = 60 + get(vviProp)*0.007
+    local vviY = altimeterY + get(vviProp)*0.007
     local vviColor = white
-    if vviY < 60-30 then
-        vviY = 60-30
+    if vviY < altimeterY-30 then
+        vviY = altimeterY-30
         vviColor = orange
-    elseif vviY > 60+30 then
-        vviY = 60+30
+    elseif vviY > altimeterY+30 then
+        vviY = altimeterY+30
         vviColor = orange
     end
-    sasl.gl.drawRectangle(vviX, 60-30, 1,  60, white) -- axis
+    sasl.gl.drawRectangle(vviX, altimeterY-30, 1,  60, white) -- axis
     sasl.gl.drawPolyLine({vviX, vviY,
                           vviX+8, vviY+6, vviX+55, vviY+6, vviX+55, vviY-6, vviX+8, vviY-6,
                           vviX, vviY}, vviColor)
@@ -181,23 +182,37 @@ function draw()
     ------------------------------------------------------------------------
     -- compass
     ------------------------------------------------------------------------
-    local compassX = 370
+    local compassX = 380
     local heading = get(compassProp)
-    sasl.gl.drawCircle(compassX, 60, 20, false, white)
-    sasl.gl.drawText(sourceCodePro, compassX, 12, string.format("%.0f", heading), 12, false, false, TEXT_ALIGN_CENTER, white)
+    local windDirection = get(windDirectionProp)
+    sasl.gl.drawCircle(compassX, 55, 20, false, white)
+    -- draw HDG box with triangle pointing down:
+    sasl.gl.drawRectangle(compassX-18, 94, 36, 14, background) -- fill box
+    sasl.gl.drawRectangle(compassX-3, 90, 6, 4, background) -- fill triangle
+    sasl.gl.drawPolyLine({compassX-18, 94, compassX-18, 108, compassX+18, 108, compassX+18, 94,
+                          compassX+4, 94, compassX, 88, compassX-4, 94, compassX-18, 94}, white)
+    sasl.gl.drawText(sourceCodePro, compassX, 96, string.format("%.0f°", heading), 12, false, false, TEXT_ALIGN_CENTER, white)
 
+    -- draw compass circle:
     sasl.gl.saveGraphicsContext()
-    sasl.gl.setTranslateTransform(compassX, 60)
+    sasl.gl.setTranslateTransform(compassX, 55)
     sasl.gl.setRotateTransform(-heading)
-    sasl.gl.drawRectangle(0, 0, 1, 19, white)
-    sasl.gl.drawTriangle(-5, 19-5, 0, 19, 5, 19-5, white)
     sasl.gl.drawText(sourceCodePro, 0, 22, "N", 12, false, false, TEXT_ALIGN_CENTER, white)
-    sasl.gl.drawRectangle(16, 0, 8, 1, white)
-    sasl.gl.drawRectangle(-24, 0, 8, 1, white)
-    sasl.gl.drawRectangle(0, -24, 1, 8, white)
+    sasl.gl.drawText(sourceCodePro, 0, -30, "S", 12, false, false, TEXT_ALIGN_CENTER, lightGrey)
+    sasl.gl.drawText(sourceCodePro, 22, -4, "E", 12, false, false, TEXT_ALIGN_LEFT, lightGrey)
+    sasl.gl.drawText(sourceCodePro, -22, -4, "W", 12, false, false, TEXT_ALIGN_RIGHT, lightGrey)
+    -- draw ticks:
+    for angle=1,12 do
+        sasl.gl.setRotateTransform(30)
+        if angle == 3 or angle == 6 or angle == 9 or angle == 12 then
+            sasl.gl.drawRectangle(0, 14, 1, 6, white) -- long ticks at cardinals
+        else
+            sasl.gl.drawRectangle(0, 18, 1, 5, white) -- short ticks elsewhere
+        end
+    end
 
     -- draw wind indicator
-    sasl.gl.setRotateTransform(get(windDirectionProp))
+    sasl.gl.setRotateTransform(windDirection)
     local windSpeed = get(windSpeedProp)
     local numTriangles = math.floor(windSpeed/50)
     windSpeed = windSpeed - numTriangles * 50
@@ -224,6 +239,7 @@ function draw()
         currentY = currentY - 3
     end
     sasl.gl.restoreGraphicsContext()
+    sasl.gl.drawText(sourceCodePro, compassX, 12, string.format("WIND %.0f", windDirection), 12, false, false, TEXT_ALIGN_CENTER, greyBlue)
 end
 
 
