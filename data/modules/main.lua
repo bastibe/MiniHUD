@@ -3,7 +3,7 @@ sasl.options.setAircraftPanelRendering(false)
 sasl.options.set3DRendering(false)
 sasl.options.setInteractivity(false)
 
-local miniHUDVersionProp = createGlobalPropertys("miniHUD/version", "v1.1.2")
+local miniHUDVersionProp = createGlobalPropertys("miniHUD/version", "v1.1.3")
 sasl.logInfo("Version:", get(miniHUDVersionProp))
 
 local instrumentPanel = loadComponent("instrumentpanel")

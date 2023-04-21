@@ -26,10 +26,12 @@ local rudderTrimProp = globalPropertyf("sim/cockpit2/controls/rudder_trim")
 local rudderControlProp = globalPropertyf("sim/cockpit2/controls/yoke_heading_ratio")
 local elevatorControlProp = globalPropertyf("sim/cockpit2/controls/yoke_pitch_ratio")
 local aileronControlProp = globalPropertyf("sim/cockpit2/controls/yoke_roll_ratio")
-if sasl.getXPVersion() >= 12 then
-    local flapsProp = globalPropertyf("sim/cockpit2/controls/flap_handle_request_ratio")
+local flapsProp = nil
+if sasl.getXPVersion() >= 12000 then
+    -- not available in X-Plane 11
+    flapsProp = globalPropertyf("sim/cockpit2/controls/flap_handle_request_ratio")
 else
-    local flapsProp = globalPropertyf("sim/cockpit2/controls/flap_ratio")
+    flapsProp = globalPropertyf("sim/cockpit2/controls/flap_ratio")
 end
 local mixtureProp = globalPropertyf("sim/cockpit2/engine/actuators/mixture_ratio_all")
 local propProp = globalPropertyf("sim/cockpit2/engine/actuators/prop_ratio_all")
