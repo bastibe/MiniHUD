@@ -79,28 +79,26 @@ end
 
 --- Drawing callback.
 function draw()
-
-    local wh = get(localState).windowHeight
-    local ww = get(localState).windowWidth
+    local totalWindowHeight = get(localState).windowHeight
+    local totalWindowWidth = get(localState).windowWidth
 
     -- tall window width
-    local twW = 150
+    local airspeedFrameWidth = 150
 
     -- small window height
-    local swH = wh * 0.4
-    local swW = ww - 180
-    -- small window height ratio
-    local swHR = swH * 0.01
-    local swWR = swW * 0.01
+    local mainFrameHeight = totalWindowHeight * 0.4
+    local mainFrameWidth = totalWindowWidth - 180
+    -- our virtual "pixel" unit for drawing independent of window size
+    local px = mainFrameHeight * 0.01
 
      -- draw dark background
-     sasl.gl.drawRectangle(0, 0, twW, wh*0.85, background)
-     sasl.gl.drawRectangle(twW, 0, swW, swH, background)
+     sasl.gl.drawRectangle(0, 0, airspeedFrameWidth, totalWindowHeight*0.85, background)
+     sasl.gl.drawRectangle(airspeedFrameWidth, 0, mainFrameWidth, mainFrameHeight, background)
  
      ------------------------------------------------------------------------
      -- airspeed indicator
      ------------------------------------------------------------------------
-     local airspeedHeight = wh * 0.65
+     local airspeedHeight = totalWindowHeight * 0.65
      local airspeedX = 75
      local maxAirspeed = get(vneProp) * 1.2
      local minAirspeed = get(vsoProp)
@@ -137,63 +135,63 @@ function draw()
      ------------------------------------------------------------------------
      -- trim indicator
      ------------------------------------------------------------------------
-     local trimX = twW + (swWR * 10)
-     local trimRadius = swHR * 25
+     local trimX = airspeedFrameWidth + (mainFrameWidth * 0.10)
+     local trimRadius = px * 25
      local lineThickness = 2
       -- draw axes:
-    sasl.gl.drawRectangle(trimX, swHR * 45, lineThickness, 2*trimRadius, white) -- elevator
-    sasl.gl.drawRectangle(trimX-trimRadius, swHR * 45+trimRadius, 2*trimRadius, lineThickness, white) -- aileron
-    sasl.gl.drawRectangle(trimX-trimRadius, swHR * 35, 2*trimRadius, lineThickness, white) -- rudder
+    sasl.gl.drawRectangle(trimX, px * 45, lineThickness, 2*trimRadius, white) -- elevator
+    sasl.gl.drawRectangle(trimX-trimRadius, px * 45+trimRadius, 2*trimRadius, lineThickness, white) -- aileron
+    sasl.gl.drawRectangle(trimX-trimRadius, px * 35, 2*trimRadius, lineThickness, white) -- rudder
     -- draw trim tab:
-    sasl.gl.drawRectangle(trimX-swHR*3+1, swHR * 45+trimRadius-get(elevatorTrimProp)*trimRadius + swHR*1, swHR * 6, swHR * 2, white)
-    sasl.gl.drawRectangle(trimX+get(aileronTrimProp)*trimRadius - swHR*1 +1, (swHR * 45)+trimRadius - swHR * 2 -2, swHR * 2, swHR * 6, white)
-    sasl.gl.drawRectangle(trimX+get(rudderTrimProp)*trimRadius-1, swHR * 35 - swHR *3, swHR * 2, swHR * 6, white)
+    sasl.gl.drawRectangle(trimX-px*3+1, px * 45+trimRadius-get(elevatorTrimProp)*trimRadius + px*1, px * 6, px * 2, white)
+    sasl.gl.drawRectangle(trimX+get(aileronTrimProp)*trimRadius - px*1 +1, (px * 45)+trimRadius - px * 2 -2, px * 2, px * 6, white)
+    sasl.gl.drawRectangle(trimX+get(rudderTrimProp)*trimRadius-1, px * 35 - px *3, px * 2, px * 6, white)
     -- draw control bar:
-    sasl.gl.drawRectangle(trimX-1, swHR * 45+trimRadius, swHR * 3, get(elevatorControlProp)*trimRadius, white)
-    sasl.gl.drawRectangle(trimX, swHR * 45+trimRadius-1, get(aileronControlProp)*trimRadius, swHR * 3, white)
-    sasl.gl.drawRectangle(trimX-1, swHR * 35 -1, get(rudderControlProp)*trimRadius, swHR * 3, white)
+    sasl.gl.drawRectangle(trimX-1, px * 45+trimRadius, px * 3, get(elevatorControlProp)*trimRadius, white)
+    sasl.gl.drawRectangle(trimX, px * 45+trimRadius-1, get(aileronControlProp)*trimRadius, px * 3, white)
+    sasl.gl.drawRectangle(trimX-1, px * 35 -1, get(rudderControlProp)*trimRadius, px * 3, white)
     sasl.gl.drawText(sourceCodePro, trimX, 12, "TRIM", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
  
     
      ------------------------------------------------------------------------
      -- throttle quadrant
      ------------------------------------------------------------------------
-     local throttleX = twW + (swWR * 30)
-     local throttleHeights = swHR * 55
+     local throttleX = airspeedFrameWidth + (mainFrameWidth * 0.30)
+     local throttleHeights = px * 55
      local throttleLineThickness = 2
-     local sphereSize = 4*swHR
-     throttleRect = {throttleX-20*swHR, swHR*25, 10*swHR, throttleHeights}
-     sasl.gl.drawRectangle(throttleX-15*swHR, swHR*25, throttleLineThickness, throttleHeights, white)
-     sasl.gl.drawText(sourceCodePro, throttleX-15*swHR, 12, "T", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
-     sasl.gl.drawCircle(throttleX-15*swHR, 25 * swHR + get(throttleProp) * 60*swHR, sphereSize, true, lightGrey)
+     local sphereSize = 4*px
+     throttleRect = {throttleX-20*px, px*25, 10*px, throttleHeights}
+     sasl.gl.drawRectangle(throttleX-15*px, px*25, throttleLineThickness, throttleHeights, white)
+     sasl.gl.drawText(sourceCodePro, throttleX-15*px, 12, "T", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
+     sasl.gl.drawCircle(throttleX-15*px, 25 * px + get(throttleProp) * 60*px, sphereSize, true, lightGrey)
 
-     propRect = {throttleX-5*swHR, swHR*25, 10*swHR, throttleHeights}
-     sasl.gl.drawRectangle(throttleX, swHR*25, throttleLineThickness, throttleHeights, white)
+     propRect = {throttleX-5*px, px*25, 10*px, throttleHeights}
+     sasl.gl.drawRectangle(throttleX, px*25, throttleLineThickness, throttleHeights, white)
      sasl.gl.drawText(sourceCodePro, throttleX, 12, "P", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
-     sasl.gl.drawCircle(throttleX, 25* swHR + get(propProp) * 60*swHR, sphereSize, true, lightBlue)
+     sasl.gl.drawCircle(throttleX, 25* px + get(propProp) * 60*px, sphereSize, true, lightBlue)
 
-     mixtureRect = {throttleX+10*swHR, swHR*25, 10*swHR, throttleHeights}
-     sasl.gl.drawRectangle(throttleX+15*swHR, swHR*25, throttleLineThickness, throttleHeights, white)
-     sasl.gl.drawText(sourceCodePro, throttleX+15*swHR, 12, "M", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
-     sasl.gl.drawCircle(throttleX+15*swHR, 25* swHR + get(mixtureProp) * 60*swHR, sphereSize, true, lightRed)
+     mixtureRect = {throttleX+10*px, px*25, 10*px, throttleHeights}
+     sasl.gl.drawRectangle(throttleX+15*px, px*25, throttleLineThickness, throttleHeights, white)
+     sasl.gl.drawText(sourceCodePro, throttleX+15*px, 12, "M", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
+     sasl.gl.drawCircle(throttleX+15*px, 25* px + get(mixtureProp) * 60*px, sphereSize, true, lightRed)
  
     
      ------------------------------------------------------------------------
      -- flaps
      ------------------------------------------------------------------------
-     local flapX = twW + (swWR * 40)
+     local flapX = airspeedFrameWidth + (mainFrameWidth * 0.40)
      local flapThickness = 2
-     flapsRect = {flapX-5*swHR, 25*swHR, 10*swHR, 40*swHR}
-     sasl.gl.drawRectangle(flapX, 25*swHR, flapThickness, 40*swHR, white)
+     flapsRect = {flapX-5*px, 25*px, 10*px, 40*px}
+     sasl.gl.drawRectangle(flapX, 25*px, flapThickness, 40*px, white)
      sasl.gl.drawText(sourceCodePro, flapX, 12, "F", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
-     sasl.gl.drawRectangle(flapX-5*swHR, 25 * swHR + (1-get(flapsProp)) * 40*swHR - 2, 10*swHR, 5*swHR, white)
+     sasl.gl.drawRectangle(flapX-5*px, 25 * px + (1-get(flapsProp)) * 40*px - 2, 10*px, 5*px, white)
  
      
      ------------------------------------------------------------------------
      -- vvi/altitude
      ------------------------------------------------------------------------
-     local altimeterX = twW + (swWR * 55)
-     local altimeterY = 50*swHR
+     local altimeterX = airspeedFrameWidth + (mainFrameWidth * 0.55)
+     local altimeterY = 50*px
      local altitude = get(altitudeProp)
      local minStripAlt = math.floor(altitude/100)*100
      local altRangeMax = 3
@@ -203,69 +201,69 @@ function draw()
          local stripAlt = minStripAlt + altIdx*100
          local altDifference = altitude - stripAlt
          if stripAlt >= 0 then
-             sasl.gl.drawText(sourceCodePro, altimeterX, altimeterY-3*swHR-altDifference/(2*swHR),
+             sasl.gl.drawText(sourceCodePro, altimeterX, altimeterY-3*px-altDifference/(2*px),
                               string.format("%.0f", stripAlt), baseFontSize, false, false, TEXT_ALIGN_CENTER,
                               {1, 1, 1, 1-math.abs(altDifference)/totalRange})
          end
      end
-     sasl.gl.drawRectangle(altimeterX-(30*swHR), altimeterY-(8*swHR), 60*swHR, 16*swHR, background)
-     sasl.gl.drawFrame(altimeterX-(30*swHR), altimeterY-(8*swHR), 60*swHR, 16*swHR, white)
-     sasl.gl.drawText(sourceCodePro, altimeterX, altimeterY-(4*swHR), string.format("%.0f", altitude), baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
-     local vviX = altimeterX+(29*swHR)
+     sasl.gl.drawRectangle(altimeterX-(30*px), altimeterY-(8*px), 60*px, 16*px, background)
+     sasl.gl.drawFrame(altimeterX-(30*px), altimeterY-(8*px), 60*px, 16*px, white)
+     sasl.gl.drawText(sourceCodePro, altimeterX, altimeterY-(4*px), string.format("%.0f", altitude), baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
+     local vviX = altimeterX+(29*px)
      local vviY = altimeterY + get(vviProp)*0.007
      local vviColor = white
-     if vviY < altimeterY-(30*swHR) then
-         vviY = altimeterY-(30*swHR)
+     if vviY < altimeterY-(30*px) then
+         vviY = altimeterY-(30*px)
          vviColor = orange
-     elseif vviY > altimeterY+(30*swHR) then
-         vviY = altimeterY+(30*swHR)
+     elseif vviY > altimeterY+(30*px) then
+         vviY = altimeterY+(30*px)
          vviColor = orange
      end
-     sasl.gl.drawRectangle(vviX, altimeterY-(30*swHR), 1*swHR,  60*swHR, white) -- axis
+     sasl.gl.drawRectangle(vviX, altimeterY-(30*px), 1*px,  60*px, white) -- axis
      sasl.gl.drawPolyLine({vviX, vviY,
-                           vviX+(8*swHR), vviY+(6*swHR), vviX+(55*swHR), vviY+(6*swHR), vviX+(55*swHR), vviY-(6*swHR), vviX+(8*swHR), vviY-(6*swHR),
+                           vviX+(8*px), vviY+(6*px), vviX+(55*px), vviY+(6*px), vviX+(55*px), vviY-(6*px), vviX+(8*px), vviY-(6*px),
                            vviX, vviY}, vviColor)
-     sasl.gl.drawText(sourceCodePro, vviX+(10*swHR), vviY-(4*swHR), string.format("%+.0f", get(vviProp)), baseFontSize, false, false, TEXT_ALIGN_LEFT, vviColor)
+     sasl.gl.drawText(sourceCodePro, vviX+(10*px), vviY-(4*px), string.format("%+.0f", get(vviProp)), baseFontSize, false, false, TEXT_ALIGN_LEFT, vviColor)
   
      
      ------------------------------------------------------------------------
      -- compass
      ------------------------------------------------------------------------
-     local compassX = twW + (swWR * 90)
+     local compassX = airspeedFrameWidth + (mainFrameWidth * 0.90)
      local heading = get(compassProp)
      local windDirection = get(windDirectionProp)
-     sasl.gl.drawCircle(compassX, (45*swHR), (20*swHR), false, white)
+     sasl.gl.drawCircle(compassX, (45*px), (20*px), false, white)
      -- draw HDG box with triangle pointing down:
-     sasl.gl.drawRectangle(compassX-(18*swHR), (84*swHR), (36*swHR), (14*swHR), background) -- fill box
-     sasl.gl.drawRectangle(compassX-(3*swHR), (80*swHR), (6*swHR), (4*swHR), background) -- fill triangle
+     sasl.gl.drawRectangle(compassX-(18*px), (84*px), (36*px), (14*px), background) -- fill box
+     sasl.gl.drawRectangle(compassX-(3*px), (80*px), (6*px), (4*px), background) -- fill triangle
      sasl.gl.drawPolyLine(
     {
-        compassX-(18*swHR), (84*swHR),
-        compassX-(18*swHR), (98*swHR),
-        compassX+(18*swHR), (98*swHR),
-        compassX+(18*swHR), (84*swHR),
-        compassX+(4*swHR), (84*swHR),
-        compassX, (78*swHR), compassX-(4*swHR), -- pointy bit
-        (84*swHR), compassX-(18*swHR), 
-        (84*swHR)
+        compassX-(18*px), (84*px),
+        compassX-(18*px), (98*px),
+        compassX+(18*px), (98*px),
+        compassX+(18*px), (84*px),
+        compassX+(4*px), (84*px),
+        compassX, (78*px), compassX-(4*px), -- pointy bit
+        (84*px), compassX-(18*px), 
+        (84*px)
     }, white)
-     sasl.gl.drawText(sourceCodePro, compassX, (86*swHR), string.format("%.0f°", heading), baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
+     sasl.gl.drawText(sourceCodePro, compassX, (86*px), string.format("%.0f°", heading), baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
  
      -- draw compass circle:
      sasl.gl.saveGraphicsContext()
-     sasl.gl.setTranslateTransform(compassX, (45*swHR))
+     sasl.gl.setTranslateTransform(compassX, (45*px))
      sasl.gl.setRotateTransform(-heading)
-     sasl.gl.drawText(sourceCodePro, 0, (22*swHR), "N", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
-     sasl.gl.drawText(sourceCodePro, 0, (-30*swHR), "S", baseFontSize, false, false, TEXT_ALIGN_CENTER, lightGrey)
-     sasl.gl.drawText(sourceCodePro, (22*swHR), (-4*swHR), "E", baseFontSize, false, false, TEXT_ALIGN_LEFT, lightGrey)
-     sasl.gl.drawText(sourceCodePro, (-22*swHR), (-4*swHR), "W", baseFontSize, false, false, TEXT_ALIGN_RIGHT, lightGrey)
+     sasl.gl.drawText(sourceCodePro, 0, (22*px), "N", baseFontSize, false, false, TEXT_ALIGN_CENTER, white)
+     sasl.gl.drawText(sourceCodePro, 0, (-30*px), "S", baseFontSize, false, false, TEXT_ALIGN_CENTER, lightGrey)
+     sasl.gl.drawText(sourceCodePro, (22*px), (-4*px), "E", baseFontSize, false, false, TEXT_ALIGN_LEFT, lightGrey)
+     sasl.gl.drawText(sourceCodePro, (-22*px), (-4*px), "W", baseFontSize, false, false, TEXT_ALIGN_RIGHT, lightGrey)
      -- draw ticks:
      for angle=1,12 do
          sasl.gl.setRotateTransform(30)
          if angle == 3 or angle == 6 or angle == 9 or angle == 12 then
-             sasl.gl.drawRectangle(0, (14*swHR), (1*swHR), (6*swHR), white) -- long ticks at cardinals
+             sasl.gl.drawRectangle(0, (14*px), (1*px), (6*px), white) -- long ticks at cardinals
          else
-             sasl.gl.drawRectangle(0, (18*swHR), (1*swHR), (5*swHR), white) -- short ticks elsewhere
+             sasl.gl.drawRectangle(0, (18*px), (1*px), (5*px), white) -- short ticks elsewhere
          end
      end
  
@@ -277,24 +275,24 @@ function draw()
      local numLong = math.floor(windSpeed/10)
      windSpeed = windSpeed - numLong * 10
      local numShort = math.floor(windSpeed/5)
-     local barblength = (26*swHR)
+     local barblength = (26*px)
      if windSpeed < 50 then
-         barblength = (20*swHR)
+         barblength = (20*px)
      end
      sasl.gl.drawRectangle(0, -barblength/2, 1, barblength, greyBlue)
      local currentY = barblength/2
      for triangle=1,numTriangles do
-         sasl.gl.drawTriangle(0, currentY, 0, currentY-(5*swHR), -(6*swHR), currentY+(2*swHR), greyBlue)
-         currentY = currentY - (6*swHR)
+         sasl.gl.drawTriangle(0, currentY, 0, currentY-(5*px), -(6*px), currentY+(2*px), greyBlue)
+         currentY = currentY - (6*px)
      end
-     currentY = currentY - (2*swHR)
+     currentY = currentY - (2*px)
      for long=1,numLong do
-         sasl.gl.drawLine(0, currentY, (-6*swHR), currentY+(5*swHR), greyBlue)
-         currentY = currentY - (3*swHR)
+         sasl.gl.drawLine(0, currentY, (-6*px), currentY+(5*px), greyBlue)
+         currentY = currentY - (3*px)
      end
      for short=1,numShort do
-         sasl.gl.drawLine(0, currentY, -(3*swHR), currentY+(3*swHR), greyBlue)
-         currentY = currentY - (3*swHR)
+         sasl.gl.drawLine(0, currentY, -(3*px), currentY+(3*px), greyBlue)
+         currentY = currentY - (3*px)
      end
      sasl.gl.restoreGraphicsContext()
      sasl.gl.drawText(sourceCodePro, compassX, 8, string.format("WIND %.0f", windDirection), baseFontSize, false, false, TEXT_ALIGN_CENTER, greyBlue)
