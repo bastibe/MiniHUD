@@ -60,7 +60,7 @@ end
 function draw()
     -- draw dark background
     sasl.gl.drawRectangle(0, 0, 60, 200, background)
-    sasl.gl.drawRectangle(60, 0, 340, 110, background)
+    sasl.gl.drawRectangle(60, 0, 360, 110, background)
 
     ------------------------------------------------------------------------
     -- airspeed indicator
