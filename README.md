@@ -7,7 +7,7 @@ Sometimes I like to fly from the external view, or on a small laptop
 screen where the cockpit instruments are very hard to read. I created
 the MiniHUD to make X-Plane usable in these situations.
 
-![External Screenshot](external%20screenshot.png)
+![External Screenshot](1920by1080Screenshot.PNG)
 ![Internal Screenshot](internal%20screenshot.png)
 
 From left to right, the plugin shows:
@@ -28,7 +28,8 @@ Flight Simulator 2020's instrument overlay.
 
 ### Configuration
 
-You can drag and drop the MiniHUD to a different place on the screen.
+You can drag and drop the MiniHUD to a different place on the screen, 
+and you can resize it by dragging on one of its corners.
 
 Bind a button to miniHUD → show/hide miniHUD to switch the HUD on or
 off.
@@ -51,6 +52,11 @@ directory should now contain
 ### Compatibility
 
 MiniHUD works in X-Plane 11 and 12, on Windows, macOS (Intel+ARM), and Linux.
+
+### Changelog
+
+- v1.3.0 (29-10-2024)  
+  Allow resizing of the MiniHUD (Thank you, TreeBaron!)
 
 ### License
 
